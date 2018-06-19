@@ -67,25 +67,23 @@ public class HookSeparate extends BaseHook {
 
             case "com.sonymobile.android.dialer":
                 // to capture phone number and name
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    mLogger.log("hook com.android.incallui.CallCardPresenter...");
-                    final Class<?> callCardPresenter = XposedHelpers.findClass("com.android.incallui.CallCardPresenter", loadPackageParam.classLoader);
-                    XposedBridge.hookAllMethods(callCardPresenter, "updateContactEntry", new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            mLogger.log("updateContactEntry");
-                            try {
-                                Context context = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
-                                String number = (String) XposedHelpers.getObjectField(param.args[0], "number");
-                                String name = (String) XposedHelpers.getObjectField(param.args[0], "name");
-                                if (context != null)
-                                    setCallerInfo(context, false, name, number);
-                            } catch (Exception e) {
-                                XposedBridge.log(e.getMessage());
-                            }
+                mLogger.log("hook com.android.incallui.CallCardPresenter...");
+                final Class<?> callCardPresenter = XposedHelpers.findClass("com.android.incallui.CallCardPresenter", loadPackageParam.classLoader);
+                XposedBridge.hookAllMethods(callCardPresenter, "updateContactEntry", new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        mLogger.log("updateContactEntry");
+                        try {
+                            Context context = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
+                            String number = (String) XposedHelpers.getObjectField(param.args[0], "number");
+                            String name = (String) XposedHelpers.getObjectField(param.args[0], "name");
+                            if (context != null)
+                                setCallerInfo(context, false, name, number);
+                        } catch (Exception e) {
+                            XposedBridge.log(e.getMessage());
                         }
-                    });
-                }
+                    }
+                });
                 break;
 
             case "com.sonymobile.callrecording":
