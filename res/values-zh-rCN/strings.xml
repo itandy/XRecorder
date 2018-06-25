@@ -33,5 +33,16 @@
     <string name="alert_only_support_sony_device">仅支持Sony Xperia设备</string>
     <string name="alert_no_recorder_exist">没有检测到通话录音工具！\n\n提示\n1.仅支持官方rom\n2.Lollipop需要安装com.sonymobile.callrecording</string>
     <string name="alert_ok_button">确认</string>
+    <string name="notification_action_delete_button">删除</string>
+    <string name="notification_action_title">通话录音来自于</string>
+    <string name="notification_action_text_short">点按即可收听新录音</string>
+    <string name="notification_action_text_long">%s已保存。\\n\\n点按即可收听新录音</string>
+    <string name="notification_channel_descr">通话录音通知通道</string>
+    <string name="enable_notification_title">通话结束后显示通知</string>
+    <string name="enable_notification_sum">显示通知以收听或删除录音</string>
+    <string name="notification_timeout_title">通知超时</string>
+    <string name="notification_timeout_sum">自动删除通知的等待秒數\n\n设为零将防止自动删除</string>
+    <string name="alert_permissions_denied">没有适当的权限，通知可能无法运作</string>
+    <string name="notification_summary_title">点击查看新的通话录音细节</string>
 
 </resources>

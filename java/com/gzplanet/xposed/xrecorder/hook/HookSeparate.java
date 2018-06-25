@@ -1,17 +1,19 @@
 package com.gzplanet.xposed.xrecorder.hook;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
-import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.view.View;
 
+import com.gzplanet.xposed.xrecorder.util.Constants;
 import com.gzplanet.xposed.xrecorder.util.Logger;
 import com.gzplanet.xposed.xrecorder.util.SettingsHelper;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+import static com.gzplanet.xposed.xrecorder.util.Constants.ACTION_SHOW_DELETE_NOTIF;
 import static com.gzplanet.xposed.xrecorder.util.Constants.CONNECTING;
 import static com.gzplanet.xposed.xrecorder.util.Constants.RINGING;
 
@@ -104,7 +107,8 @@ public class HookSeparate extends BaseHook {
                 XposedBridge.hookAllMethods(callRecordingService, "onStartCommand", new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
-                        mSettingsHelper.setRemotePreference((Context) param.thisObject);
+                        Context context = (Context) param.thisObject;
+                        mSettingsHelper.setRemotePreference(context);
                         mHandler.setContext((Context) param.thisObject);
 
                         Intent intent = (Intent) param.args[0];
@@ -130,6 +134,7 @@ public class HookSeparate extends BaseHook {
                                     if (Enum.valueOf(State, "OFF") == mState) {
                                         mLogger.log("killing service in 5s");
                                         mHandler.sendEmptyMessageDelayed(2, 5000);
+                                        promptDeleteOption(context);
                                     }
                                     return;
                                 }
@@ -167,6 +172,7 @@ public class HookSeparate extends BaseHook {
                                     XposedHelpers.callMethod(param.thisObject, "transitionToState", Enum.valueOf(Transition, "STOP_RECORDING"));
                                     mLogger.log("killing service in 5s");
                                     mHandler.sendEmptyMessageDelayed(2, 5000);
+                                    promptDeleteOption(context);
                                 } else if (Enum.valueOf(State, "OFF") == mState) {
                                     mLogger.log("onStartCommand mState:OFF");
                                     // CallRecorder is not prepared, wait...
@@ -180,6 +186,7 @@ public class HookSeparate extends BaseHook {
                                 mSettingsHelper.setRecordingStopped(true);
                                 mLogger.log("killing service in 5s");
                                 mHandler.sendEmptyMessageDelayed(2, 5000);
+                                promptDeleteOption(context);
                                 break;
                             case "com.sonymobile.callwidgetframework.WIDGET_ACTION_SELECTED":
                                 // manual start recording
@@ -231,8 +238,9 @@ public class HookSeparate extends BaseHook {
                         callType = "INCOMING".equals(mSettingsHelper.getPhoneState()) ? value[0] : value[1];
                         callerName = mSettingsHelper.getCallerName();
                         phoneNumber = mSettingsHelper.getPhoneNumber();
-                        param.setResult(((String)param.getResult()).replace(".amr", ".3gp"));
+                        param.setResult(((String)param.getResult()).replace(".amr", ".mp3"));
                         changeFileName(param);
+                        mSettingsHelper.setFilename(param.getResult().toString());
                     }
                 });
 
@@ -384,6 +392,29 @@ public class HookSeparate extends BaseHook {
         }
         mLogger.log(String.format("setPrimary PhoneNo:%s, CallerName:%s, nameIsNumber:%b",
                 phoneNumber, callerName, nameIsNumber));
+
+    }
+
+    private void promptDeleteOption(Context context) {
+        if (mSettingsHelper.isEnableAutoRecord() && mSettingsHelper.isEnableNotification()) {
+            String filename = mSettingsHelper.getFilename();
+            String path = Environment.getExternalStorageDirectory().getPath() + Constants.AUDIO_FILE_PATH;
+            String callerName = mSettingsHelper.getCallerName();
+            String phoneNo = mSettingsHelper.getPhoneNumber();
+            File file = new File(path + "/" + filename);
+            if (file.exists()) {
+                mLogger.log("Sending broadcast to create notification");
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.gzplanet.xposed.xrecorder", "com.gzplanet.xposed.xrecorder.RecorderReceiver"));
+                intent.setAction(ACTION_SHOW_DELETE_NOTIF);
+                intent.putExtra("path", path);
+                intent.putExtra("filename", filename);
+                intent.putExtra("caller_name", callerName);
+                intent.putExtra("phone_no", phoneNo);
+                intent.putExtra("timeout", mSettingsHelper.getNotificationTimeout());
+                context.sendBroadcast(intent);
+            }
+        }
 
     }
 

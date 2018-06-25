@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gzplanet.xposed.xrecorder">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +21,15 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name=".RecorderReceiver"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="com.gzplanet.xposed.xrecorder.ACTION_SHOW_DELETE_DIALOG" />
+            </intent-filter>
+        </receiver>
+
         <activity-alias
             android:name=".activity.ShowInAppDrawer"
             android:enabled="true"
@@ -29,6 +42,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
 
         <provider
             android:authorities="com.gzplanet.app.xrecorder_preferences"

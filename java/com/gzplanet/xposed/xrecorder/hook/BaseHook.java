@@ -8,6 +8,8 @@ import com.gzplanet.xposed.xrecorder.util.SettingsHelper;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+import static com.gzplanet.xposed.xrecorder.util.Constants.CALLER_UNKNOWN;
+
 public abstract class BaseHook {
     public SettingsHelper mSettingsHelper;
     public Logger mLogger;
@@ -29,7 +31,7 @@ public abstract class BaseHook {
         if (callerName != null)
             callerName = callerName.replaceAll(" ", "");
         if (callerName.equals(""))
-            callerName = "unknown";
+            callerName = CALLER_UNKNOWN;
 
         String fileName = mSettingsHelper.getFileFormat();
 
@@ -43,8 +45,8 @@ public abstract class BaseHook {
                 .replaceAll("mm", names[4])
                 .replaceAll("ss", names[5])
                 .replaceAll("tt", callType)
-                .replaceAll("nn", callerName)
-                .replaceAll("pp", phoneNumber);
+                .replaceAll("pp", phoneNumber)
+                .replaceAll("nn", callerName);
 
         param.setResult(fileName + "." + results[1]);
 

@@ -34,4 +34,15 @@
     <string name="alert_no_recorder_exist">No Recorder Found!\n\nTip:\n1.only support stock rom\n2.com.sonymobile.callrecording is required on Lollipop</string>
     <string name="alert_ok_button">OK</string>
 
+    <string name="enable_notification_title">Show notification after calls end</string>
+    <string name="enable_notification_sum">Show notification to listen to or delete recording file</string>
+    <string name="notification_timeout_title">Notification timeout</string>
+    <string name="notification_timeout_sum">No of seconds before notification should be removed automatically\n\nSet to 0 to keep notification indefinitely</string>
+    <string name="notification_action_delete_button">Delete</string>
+    <string name="notification_action_title">Call recording from</string>
+    <string name="notification_action_text_short">Tap to listen to new recording</string>
+    <string name="notification_action_text_long">"%s saved\n\nTap to listen to new recording"</string>
+    <string name="notification_channel_descr">"Call Recorder notification channel"</string>
+    <string name="alert_permissions_denied">Notification might not work as expected without proper permissions</string>
+    <string name="notification_summary_title">Tap to see new recording details</string>
 </resources>

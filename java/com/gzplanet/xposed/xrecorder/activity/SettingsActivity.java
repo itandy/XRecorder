@@ -12,10 +12,16 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.TwoStatePreference;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.gzplanet.xposed.xrecorder.BuildConfig;
 import com.gzplanet.xposed.xrecorder.R;
 import com.gzplanet.xposed.xrecorder.util.Constants;
+import com.robobunny.SeekBarPreference;
+
+import static com.gzplanet.xposed.xrecorder.util.Constants.REALTIME_PERMISSION;
+import static com.gzplanet.xposed.xrecorder.util.Constants.REQUEST_CODE_STORAGE_PERMS;
+
 
 public class SettingsActivity extends BaseActivity {
     public static final String DEFAULT_FILE_PATH = Environment.getExternalStorageDirectory().getPath() + "/recorder";
@@ -41,6 +47,8 @@ public class SettingsActivity extends BaseActivity {
         private EditTextPreference etFilePath;
         private EditTextPreference etFileFormat;
         private Preference pAppInfo;
+        private TwoStatePreference cbEnableNotification;
+        private SeekBarPreference sbNotifTimeout;
 
         private boolean isSeparateRecorderExist;
 
@@ -51,6 +59,9 @@ public class SettingsActivity extends BaseActivity {
             addPreferencesFromResource(R.xml.preferences);
 
             isSeparateRecorderExist = packageExists("com.sonymobile.callrecording");
+
+            cbEnableNotification = (TwoStatePreference) findPreference("pref_enable_notification");
+            sbNotifTimeout = (SeekBarPreference) findPreference("pref_notification_timeout");
 
             cbEnableAll = (TwoStatePreference) findPreference("pref_enable_auto_call_recording");
             cbEnableAll.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -92,6 +103,13 @@ public class SettingsActivity extends BaseActivity {
             if (!isSeparateRecorderExist) {
                 showAlert(R.string.alert_no_recorder_exist);
             }
+
+            if (!hasPermissions())
+                requestPermissions(REALTIME_PERMISSION, REQUEST_CODE_STORAGE_PERMS);
+            else {
+                cbEnableNotification.setEnabled(true);
+                sbNotifTimeout.setEnabled(true);
+            }
         }
 
         private boolean packageExists(String packageName) {
@@ -115,6 +133,44 @@ public class SettingsActivity extends BaseActivity {
                     })
                     .setCancelable(false)
                     .show();
+        }
+
+        private boolean hasPermissions() {
+            for (String perms : REALTIME_PERMISSION){
+                int res = getContext().checkCallingOrSelfPermission(perms);
+                if (!(res == PackageManager.PERMISSION_GRANTED)){
+                    // it return false because your app dosen't have permissions.
+                    return false;
+                }
+
+            }
+            // it return true, your app has permissions.
+            return true;
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grandResults) {
+            boolean allowed = true;
+            switch (requestCode) {
+                case REQUEST_CODE_STORAGE_PERMS:
+                    for (int res : grandResults) {
+                        // if user granted all required permissions then 'allowed' will return true.
+                        allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
+                    }
+                    break;
+                default:
+                    // if user denied then 'allowed' return false.
+                    allowed = false;
+                    break;
+            }
+
+            if (!allowed)
+                Toast.makeText(getContext(), R.string.alert_permissions_denied, Toast.LENGTH_LONG).show();
+            else {
+                cbEnableNotification.setEnabled(true);
+                sbNotifTimeout.setEnabled(true);
+            }
+
         }
     }
 }

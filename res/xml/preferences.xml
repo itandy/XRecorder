@@ -1,24 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:robobunny="http://robobunny.com">
 
     <PreferenceCategory
         android:key="pref_menu_switcher"
         android:title="@string/menu_switcher" >
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="pref_enable_auto_call_recording"
             android:summary="@string/enable_auto_call_recording_sum"
             android:title="@string/enable_auto_call_recording_title" />
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="pref_enable_outgoing_call_recording"
             android:summary="@string/enable_outgoing_call_recording_sum"
             android:title="@string/enable_outgoing_call_recording_title" />
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="pref_enable_incoming_call_recording"
             android:summary="@string/enable_incoming_call_recording_sum"
             android:title="@string/enable_incoming_call_recording_title" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="pref_enable_notification"
+            android:enabled="false"
+            android:summary="@string/enable_notification_sum"
+            android:title="@string/enable_notification_title" />
+        <com.robobunny.SeekBarPreference
+            android:enabled="false"
+            android:defaultValue="20"
+            android:key="pref_notification_timeout"
+            android:max="60"
+            android:summary="@string/notification_timeout_sum"
+            android:title="@string/notification_timeout_title"
+            robobunny:min="0"
+            robobunny:unitsLeft=""
+            robobunny:unitsRight="s" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="pref_menu_file"
@@ -41,7 +58,7 @@
     <PreferenceCategory
         android:key="pref_menu_about"
         android:title="@string/menu_about" >
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="pref_enable_logging"
             android:title="@string/enable_logging_title" />
         <Preference

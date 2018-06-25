@@ -9,6 +9,8 @@ import com.gzplanet.xposed.xrecorder.BuildConfig;
 
 import de.robv.android.xposed.XSharedPreferences;
 
+import static com.gzplanet.xposed.xrecorder.util.Constants.DEFAULT_NOTIFICATION_TIMEOUT_SECONDS;
+
 @SuppressWarnings("unused")
 public class SettingsHelper {
     private SharedPreferences mPreferences = null;
@@ -26,26 +28,22 @@ public class SettingsHelper {
 
     public boolean isEnableAutoRecord() {
         reload();
-        boolean value = getBoolean("pref_enable_auto_call_recording", true);
-        return value;
+        return getBoolean("pref_enable_auto_call_recording", true);
     }
 
     public boolean isEnableRecordOutgoing() {
         reload();
-        boolean value = getBoolean("pref_enable_auto_call_recording", true) && getBoolean("pref_enable_outgoing_call_recording", true);
-        return value;
+        return getBoolean("pref_enable_auto_call_recording", true) && getBoolean("pref_enable_outgoing_call_recording", true);
     }
 
     public boolean isEnableRecordIncoming() {
         reload();
-        boolean value = getBoolean("pref_enable_auto_call_recording", true) && getBoolean("pref_enable_incoming_call_recording", true);
-        return value;
+        return getBoolean("pref_enable_auto_call_recording", true) && getBoolean("pref_enable_incoming_call_recording", true);
     }
 
     public String getFileFormat() {
         reload();
-        String value = getString("pref_file_format", Constants.DEFAULT_FILE_FORMAT);
-        return value;
+        return getString("pref_file_format", Constants.DEFAULT_FILE_FORMAT);
     }
 
     public String[] getFileCallType() {
@@ -54,8 +52,15 @@ public class SettingsHelper {
     }
 
     public boolean isEnableLogging() {
-        boolean value = getBoolean("pref_enable_logging", true);
-        return value;
+        return getBoolean("pref_enable_logging", true);
+    }
+
+    public boolean isEnableNotification() {
+        return getBoolean("pref_enable_notification", false);
+    }
+
+    public int getNotificationTimeout() {
+        return getInt("pref_notification_timeout", DEFAULT_NOTIFICATION_TIMEOUT_SECONDS);
     }
 
     // migrated functions from CustomService
@@ -81,6 +86,14 @@ public class SettingsHelper {
 
     public void setCallerName(String callerName) {
         setString("caller_name", callerName);
+    }
+
+    public String getFilename() {
+        return getString("filename", "");
+    }
+
+    public void setFilename(String filename) {
+        setString("filename", filename);
     }
 
     public String getPhoneNumber() {

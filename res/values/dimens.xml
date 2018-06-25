@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="seekbar_topmargin">15dp</dimen>
+    <dimen name="seekbar_leftmargin">15dp</dimen>
+    <dimen name="seekbar_rightmargin">15dp</dimen>
+</resources>
