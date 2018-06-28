@@ -9,6 +9,8 @@ public class Constants {
     public final static String PREF_NAME = "com.gzplanet.xposed.xrecorder_preferences";
 
     public static final int CONNECTING = 1;
+    public static final int SELECT_PHONE_ACCOUNT = 2;
+    public static final int DIALING = 3;
     public static final int RINGING = 4;
 
     public static final String AUDIO_FILE_PATH = "/CallRecorder";

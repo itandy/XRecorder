@@ -23,10 +23,6 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import static com.gzplanet.xposed.xrecorder.util.Constants.ACTION_SHOW_DELETE_NOTIF;
-import static com.gzplanet.xposed.xrecorder.util.Constants.CONNECTING;
-import static com.gzplanet.xposed.xrecorder.util.Constants.RINGING;
-
 public class HookSeparate extends BaseHook {
     private Object mCallRecordingService;
     private MyHandler mHandler;
@@ -54,9 +50,10 @@ public class HookSeparate extends BaseHook {
 
                             int state = (Integer) XposedHelpers.callMethod(call, "getState");
 
-                            if (state == RINGING)
+                            if (state == Constants.RINGING)
                                 mSettingsHelper.setPhoneState("INCOMING");
-                            else if (state == CONNECTING)
+                            else if (state == Constants.CONNECTING || state == Constants.SELECT_PHONE_ACCOUNT
+                                    || state == Constants.DIALING)
                                 mSettingsHelper.setPhoneState("OUTGOING");
 
                             mLogger.log("onCallAdded: " + state);
@@ -406,7 +403,7 @@ public class HookSeparate extends BaseHook {
                 mLogger.log("Sending broadcast to create notification");
                 Intent intent = new Intent();
                 intent.setComponent(new ComponentName("com.gzplanet.xposed.xrecorder", "com.gzplanet.xposed.xrecorder.RecorderReceiver"));
-                intent.setAction(ACTION_SHOW_DELETE_NOTIF);
+                intent.setAction(Constants.ACTION_SHOW_DELETE_NOTIF);
                 intent.putExtra("path", path);
                 intent.putExtra("filename", filename);
                 intent.putExtra("caller_name", callerName);

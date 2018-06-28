@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 import android.widget.Toast;
 import com.gzplanet.xposed.xrecorder.util.Constants;
 import java.io.File;
@@ -53,9 +52,9 @@ public class RecorderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
         mContext = context;
+        Resources res = context.getResources();
 
         String action = intent.getAction();
-//        Log.d("XRecorder", "onReceive: " + action);
         if (action.equals(Constants.ACTION_DELETE_FILE)) {
             if (bundle != null) {
                 String path = bundle.getString("path");
@@ -64,9 +63,12 @@ public class RecorderReceiver extends BroadcastReceiver {
                 File file = new File(path + "/" + filename);
                 if (file.exists()) {
                     if (file.delete())
-                        Toast.makeText(context, filename + " deleted successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,
+                                String.format(res.getString(R.string.alert_delete_successful), filename),
+                                Toast.LENGTH_SHORT).show();
                 } else
-                    Toast.makeText(context, filename + " not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, String.format(res.getString(R.string.alert_file_not_found), filename),
+                            Toast.LENGTH_SHORT).show();
 
                 cancelNotification(context, id);
 
